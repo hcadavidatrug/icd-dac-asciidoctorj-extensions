@@ -1,0 +1,33 @@
+FROM maven:3.8.4-jdk-11 as build
+
+USER root
+
+RUN useradd -rm -d /home/user -s /bin/bash -g root -G sudo -u 1001 user
+
+#RUN apk add ttf-dejavu
+# NodeJS dependencies (to enable graphviz-based extensions)
+#RUN apk add --update nodejs nodejs-npm
+#RUN npm install -g bytefield-svg
+
+RUN apt-get update -y && apt-get install python3-pip -y
+RUN apt install python-is-python3
+RUN apt-get install graphviz -y
+RUN pip3 install nwdiag
+
+RUN mkdir /adocsrc
+RUN mkdir /adocout
+COPY ./ /asciidocext/
+WORKDIR /asciidocext
+
+# Install sysrdl2jinja
+RUN sh sysrdl2jinja/install.sh
+
+# Switch folder owners from root to user 
+RUN chown -R user /asciidocext
+RUN chown -R user /adocsrc
+RUN chown -R user /adocout
+
+# Build asciidoctor extensions
+USER user
+RUN mvn compile
+RUN chmod +x build_docs.sh

@@ -1,0 +1,14 @@
+addrmap tiny {
+    reg {
+        field {
+	    name="f1_xx";
+            sw=rw;
+            hw=r;
+        } f1[8] = 123;
+
+        field {
+            sw=r;
+            hw=w;
+        } f2[12];
+    }r1;
+};

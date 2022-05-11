@@ -1,0 +1,30 @@
+[cols="10%,5%a,20%a"]
+|===
+| Register name  | Offset | Fields
+
+{% for register in registers %}
+
+| {{register.name}}
+| {{register.offset}}
+|
+
+[cols="10%,20%,10%,10%,20%,20%"]
+!===
+! Bits ! Field name ! HW rights ! SW rights! Reset value ! Size(bytes)
+
+    {% for field in register.fields %}
+! [{{field.high}}:{{field.low}}]
+! {{field.name}}
+! {{field.hwrights}}
+! {{field.swrights}}
+! {{field.reset}}
+! {{field.width}}
+
+    {%endfor%}
+
+!===
+
+{%endfor%}
+
+
+|===

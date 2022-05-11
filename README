@@ -1,0 +1,31 @@
+
+
+Execute in the project's host
+
+  build sysrdl2ninja submodule
+
+  sh build_docs.sh /tmp/src /tmp/out
+
+Execute from the docker image
+
+1. Build the image
+
+2. Run a disposable container of the image, mapping the path '/adocsrc' with the asciidoctor sources and '/adocout' with the output path in the host.
+
+docker run --rm -it --mount type=bind,source=/tmp/adoc,target=/adocsrc --mount type=bind,source=/tmp/htmlr,target=/adocout  asciidocext:1.0
+
+
+docker run --rm -it c03e8866b949 /bin/bash
+
+* The action included in the respository automatically pushes the image on Dockerhub: hectorcadavid/asciidoctor-icd-ext:
+
+docker run --rm -it --mount type=bind,source=/tmp/adoc,target=/adocsrc --mount type=bind,source=/tmp/htmlr,target=/adocout hectorcadavid/asciidoctor-icd-ext
+
+* Run locally (not relying on CI/CD or centralized data)
+
+sh local_build_doc.sh /home/hcadavid/RUG-local/icd-pipeline-projects/DaC-asciidoctor-extensions-baseline/sample-docs-errors/rdl-conversion-errors /tmp/out2 http://localhost:8080 user:213 tdoctwo 333332
+
+
+* Run within an CI/CD, using centralized data
+
+sh gitlab_build_doc_test_env.sh /home/hcadavid/RUG-local/icd-pipeline-projects/DaC-asciidoctor-extensions-baseline/sample-docs /tmp/out http://localhost:8080/ user:123

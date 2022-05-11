@@ -1,0 +1,20 @@
+#ifndef __{{map_name}}_REGISTER_MAP__
+#define __{{map_name}}_MAP_REGISTER_MAP__
+
+enum {{map_name}}_ADDR_MAP_REGS {
+   {% for register in registers %}
+  {{register.name}} = {{register.offset}},
+{%-endfor%}
+
+};
+
+{% for register in registers %}
+/* {{register.name}} registers */
+{% for field in register.fields -%}
+// Hardware rights: {{field.hwrights}}, Software rights: {{field.swrights}}
+#define {{field.name.replace(' ','_')}}  GENMASK({{field.low}},{{field.high}})
+#define {{field.name.replace(' ','_')}}_RESET_VALUE {{field.reset}}
+{%endfor%}
+{%endfor%}
+
+#endif

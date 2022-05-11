@@ -1,0 +1,18 @@
+image: hectorcadavid/asciidoctor-icd-ext
+
+before_script:
+  - tree /builds
+
+build:
+  script:
+  - cd /asciidocext
+  - mkdir $CI_PROJECT_DIR/output
+  - sh build_docs.sh $CI_PROJECT_DIR $CI_PROJECT_DIR/output
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/output
+
+deploy-job:
+  stage: deploy
+  script:
+    - netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --dir $CI_PROJECT_DIR/output --prod

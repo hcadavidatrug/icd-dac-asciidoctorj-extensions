@@ -1,0 +1,14 @@
+addrmap tiny {
+    littleendian;
+    reg {
+        field {
+            sw=rw;
+            hw=r;
+        } f1[8] = 255;
+
+        field {
+            sw=r;
+            hw=w;
+        } f2[8];
+    } r1;
+};

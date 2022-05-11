@@ -1,0 +1,67 @@
+image: <DOCKER_HUB_IMAGE>
+
+variables:
+  LOG_TAGS_FILE_PATH: /tmp/tags.txt
+  VALE_LINTER_OUTPUT_PATH: /tmp/linter-output.json
+  BACKEND_CREDENTIALS: $BACKEND_CREDENTIALS
+
+
+stages:
+  - publish
+
+before_script:
+  - mkdir -p $CI_PROJECT_DIR/tags
+  - echo $CI_PIPELINE_ID
+  - echo $CI_COMMIT_TAG
+  - echo $CI_COMMIT_REF_NAME
+  - echo $BACKEND_CREDENTIALS
+  - git tag -n
+
+cache:
+  paths:
+    - public
+
+pages:
+  stage: publish
+  script:
+    - |-
+      if [[ $CI_COMMIT_TAG != "" ]]; then
+        echo =============================== TAGGED COMMIT - PUBLISHING: $CI_COMMIT_TAG   
+
+        mkdir -p /tmp/output
+        mkdir -p /tmp/source
+        echo $LOG_TAGS_FILE_PATH
+        echo $BACKEND_CREDENTIALS
+        sh /asciidocext/json_git_tags.sh ./ /tmp/tags.txt        
+        echo export LOG_TAGS_FILE_PATH=/tmp/tags.txt
+        cp $CI_PROJECT_DIR/* /tmp/source/ -R
+        [[ -d /tmp/source/public/ ]] && rm /tmp/source/public/* -R && rmdir /tmp/source/public && echo removing cached content from sources
+        /vale/vale --config='/asciidocext/.vale.ini' --no-exit --ext=.md /tmp/source/*.adoc --output JSON > /tmp/linter-output.json 
+        sh /asciidocext/gitlab_build_doc.sh /tmp/source /tmp/output https://documentation-dashboard.herokuapp.com $BACKEND_CREDENTIALS  
+        mkdir -p public/$CI_COMMIT_TAG/
+        mkdir -p public/latest
+        cp /tmp/output/* public/$CI_COMMIT_TAG/ -R
+        cp /tmp/output/* public/latest -R
+        tree public
+
+      else 
+        echo =============================== UNTAGGED COMMIT - STAGING: $CI_PIPELINE_ID
+
+        mkdir -p /tmp/output
+        mkdir -p /tmp/source 
+        sh /asciidocext/json_git_tags.sh ./ /tmp/tags.txt
+        export LOG_TAGS_FILE_PATH=/tmp/tags.txt
+        cp $CI_PROJECT_DIR/* /tmp/source/ -R
+        [[ -d /tmp/source/public/ ]] && rm /tmp/source/public/* -R && rmdir /tmp/source/public && echo removing cached content from sources
+        sh /asciidocext/build_docs.sh /tmp/source /tmp/output
+        mkdir -p public/stage/
+        cp /tmp/output/* public/stage/ -R
+
+      fi        
+  artifacts:
+    name: "$CI_COMMIT_TAG"
+    paths:
+      - public
+    expire_in: 5 days
+  when: always
+

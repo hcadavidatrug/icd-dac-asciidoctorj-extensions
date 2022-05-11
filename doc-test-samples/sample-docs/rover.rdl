@@ -1,0 +1,31 @@
+addrmap rovercmds {
+    littleendian;
+    reg {
+        name="COMMANDS REGISTER FOR THEORETICAL ROVER";
+        field {
+            name = "device identifier";
+            hw=rw;
+        } device_id[4]=0x0;
+        field {
+            name = "device command";
+            hw=rw;
+        } command_id[5]=0x0;
+        field {
+            name = "command param";
+            hw=rw;
+        } cmd_param[7]=0x0;
+    } CMDREGISTER@0x2D;
+
+    reg {
+        name="STATUS REGISTERS";
+        field {
+            name = "speed";
+            hw=r;
+        } speed[8];
+        field {
+            name = "heading";
+            hw=r;
+        } heading[8];
+    } STREGISTER@0x4D;
+
+};

@@ -1,0 +1,4 @@
+[submodule "sysrdl2jinja"]
+	path = sysrdl2jinja
+	url = git@github.com:hcadavid/sysrdl2jinja.git
+	branch = master
